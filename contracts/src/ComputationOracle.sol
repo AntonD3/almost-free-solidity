@@ -10,8 +10,8 @@ contract ComputationOracle {
     mapping(bytes32 merkleRoot => bool proved) public proved;
 
     address governance;
-    address public sp1_verifier;
-    bytes32 public program_key;
+    address public sp1_verifier = 0xE780809121774D06aD9B0EEeC620fF4B3913Ced1; // V3_0_0_SP1_VERIFIER_GROTH16
+    bytes32 public program_key = 0x529872d1e7a36e1f98be2bdcd4f4f2a51d4753d282daff305d070bf61840e0d3;
 
     constructor() {
         governance = msg.sender;
