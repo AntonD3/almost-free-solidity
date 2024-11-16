@@ -15,3 +15,5 @@ docs/
 .env
 
 .idea
+
+tmp.sol

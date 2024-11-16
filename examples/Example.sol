@@ -3,7 +3,6 @@
 pragma solidity >=0.8.2 <0.9.0;
 
 contract Example {
-}
     function retrieve() public view returns (uint256){
         return heavy_computation(...);
     }
@@ -16,6 +15,7 @@ contract Example {
         }
         return (mem, stack);
     }
+}
 
 function heavy_computation(bytes memory mem, uint256 stack) internal pure returns(bytes memory mem_res, uint256 stack_res) {
     // load needed witnesses from the scratch space after calldata
