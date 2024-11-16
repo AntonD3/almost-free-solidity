@@ -19,6 +19,7 @@ sha2 = "0.10.8"
 alloy-sol-types = { workspace = true }
 solc-zkmod-lib = { path = "../lib" }
 tokio.workspace = true
+web3.workspace = true
 
 [build-dependencies]
 sp1-helper = "3.0.0"
