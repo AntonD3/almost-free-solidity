@@ -38,3 +38,14 @@ This also allows for a wide range of customizations, as the code within `@free` 
 | Calculating high Fibonacci numbers   | ∞                 | ~60k                             |
 
 ### Oracles' addresses on different networks:
+
+| Network                 | Contract                                                                                 |
+|-------------------------|------------------------------------------------------------------------------------------|
+| Ethereum sepolia        | https://sepolia.etherscan.io/address/0x71FC499614deD4872903239924049f5789e636ed          |
+| EVM on Flow Testnet     | https://evm-testnet.flowscan.io/address/0x71FC499614deD4872903239924049f5789e636ed       |
+| Scroll sepolia          | https://sepolia.scrollscan.com/address/0x71FC499614deD4872903239924049f5789e636ed        |
+| Polygon cardona testnet | https://cardona-zkevm.polygonscan.com/address/0x71FC499614deD4872903239924049f5789e636ed |
+| Celo alfajores testnet  | https://alfajores.celoscan.io/address/0x71FC499614deD4872903239924049f5789e636ed         |
+| Zircuit testnet         | https://explorer.testnet.zircuit.com/address/0x71FC499614deD4872903239924049f5789e636ed  |
+| Base sepolia            | https://sepolia.basescan.org/address/0x71FC499614deD4872903239924049f5789e636ed          |
+
