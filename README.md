@@ -4,6 +4,14 @@ _Powered by ZKPs_
 This project introduces a `@free` annotation that allows you to offload any heavy computation offchain. 
 It allows solidity developers to bring the cost of compute-heavy functions almost to zero without sacrificing the DevEx. 
 
+- way to scale your project on any chain without thinking about underlying arch
+---
+## End-user overview
+This solution is intended to reduce the cost of the computations with as little changes to the codebase as possible.
+We thrive to make it almost unnoticeable to the user, as they will only have to add the annotation and not worry about the remaining process.
+All the modifications and manipulations are abstracted by the server and a preprocessor, server stores all the proofs onchain and returns the Merkle proofs to the user.
+This way the user can easily scale any project on any chain without thinking about the underlying infrastructure.
+
 ## Implementation
 1. Preprocessing
    1. Use a custom Solidity preprocessor to find all the functions with `@free` annotation in the source code.
@@ -13,7 +21,7 @@ It allows solidity developers to bring the cost of compute-heavy functions almos
 2. Proving
    1. Receive the bytecodes from step 1.2 along with the function inputs.
    2. Use a specialized server with a custom EVM implementation to ensure that the function execution can be performed without interactions with the state. 
-   3. Use a zkVM to prove the EVM execution of the function's bytecode with specific calldata.
+   3. Use SP1 zkVM to prove the EVM execution of the function's bytecode with specific calldata.
 3. Aggregation
    1. Proofs from different users of the protocol are batched to share the verification cost.
    2. Final proof is sent to the blockchain, all the nested proofs are merklized, and the root is used as a part of the public input.
@@ -30,12 +38,14 @@ This also allows for a wide range of customizations, as the code within `@free` 
 **Note: the verification of the contracts using this annotation is impossible because the resulting bytecode is modified quite significantly.**
 
 ### Potential cost estimations(assuming that our proof is one out of 5 in a batch):
+The cost of proof verification is ~250k gas, but the more proofs are aggregated within a final one - the cheaper it gets.
+There is an additional overhead of ~15k gas per every call of `@free` function that comes from additional memory operations and Merkle proof verification.
 
 | Scenario                             | Normal cost (gas) | [almost] free soldity cost (gas) |
 |--------------------------------------|-------------------|----------------------------------|
-| Verification of 100 Merkle proofs    | ~250k             | ~60k                             |
-| Verification of 2 Ed25519 signatures | ~1M               | ~60k                             |
-| Calculating high Fibonacci numbers   | ∞                 | ~60k                             |
+| Verification of 100 Merkle proofs    | ~250k             | ~65k                             |
+| Verification of 2 Ed25519 signatures | ~1M               | ~65k                             |
+| Calculating high Fibonacci numbers   | ∞                 | ~65k                             |
 
 ### Oracles' addresses on different networks:
 
