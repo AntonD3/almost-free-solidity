@@ -7,10 +7,8 @@ struct PublicValuesStruct {
     bytes32 _merkleRoot;
 }
 
-/// @title Fibonacci.
+/// @title SolcZkmod.
 /// @author Succinct Labs
-/// @notice This contract implements a simple example of verifying the proof of a computing a
-///         fibonacci number.
 contract SolcZkmod {
     /// @notice The address of the SP1 verifier contract.
     /// @dev This can either be a specific SP1Verifier for a specific version, or the
@@ -19,7 +17,6 @@ contract SolcZkmod {
     ///      https://github.com/succinctlabs/sp1-contracts/tree/main/contracts/deployments
     address public verifier;
 
-    /// @notice The verification key for the fibonacci program.
     bytes32 public programVKey;
 
     constructor(address _verifier, bytes32 _programVKey) {
@@ -27,10 +24,9 @@ contract SolcZkmod {
         programVKey = _programVKey;
     }
 
-    /// @notice The entrypoint for verifying the proof of a fibonacci number.
     /// @param _proofBytes The encoded proof.
     /// @param _publicValues The encoded public values.
-    function verifyFibonacciProof(bytes calldata _publicValues, bytes calldata _proofBytes)
+    function verifyProof(bytes calldata _publicValues, bytes calldata _proofBytes)
         public
         view
         returns (bytes32)

@@ -17,6 +17,7 @@ use clap::{Parser, ValueEnum};
 use serde::{Deserialize, Serialize};
 use sp1_sdk::{include_elf, HashableKey, ProverClient, SP1Proof, SP1ProofWithPublicValues, SP1ProvingKey, SP1Stdin, SP1VerifyingKey};
 use std::path::PathBuf;
+use std::sync::Arc;
 use crate::PublicValuesStruct;
 
 /// The ELF (executable and linkable format) file for the Succinct RISC-V zkVM.
@@ -46,10 +47,11 @@ struct SP1ProofFixture {
     proof: String,
 }
 
+#[derive(Clone)]
 pub struct Prover {
     pk: SP1ProvingKey,
     vk: SP1VerifyingKey,
-    client: ProverClient,
+    client: Arc<ProverClient>,
     proofs: HashMap<String, SP1Proof>,
 }
 
@@ -64,22 +66,30 @@ impl Prover {
         Self {
             pk,
             vk,
-            client,
+            client: Arc::new(client),
             proofs: HashMap::new(),
         }
     }
 
     pub fn prove(&mut self, req_id: String, requests: Vec<ProvingInput>) {
-        let mut stdin = SP1Stdin::new();
-        stdin.write(&requests);
+        let client = self.client.clone(); // Assume `client` is `Clone`
+        let pk = self.pk.clone();
+        let vk = self.vk.clone();
+        let mut proofs = self.proofs.clone(); // Clo
 
-        tokio::spawn(
-            async {
-                let proof = self.client.prove(&self.pk, stdin).compressed().run().unwrap();
-                self.proofs.insert(req_id, proof.proof.clone());
-                create_proof_fixture(&proof, &self.vk, ProofSystem::Groth16);
-            }
-        );
+        std::thread::spawn(move || {
+            let mut stdin = SP1Stdin::new();
+            stdin.write(&requests);
+            let proof = client.prove(&pk, stdin).compressed().run().unwrap();
+
+            // Update the cloned proofs map
+            proofs.insert(req_id.clone(), proof.proof.clone());
+
+            // Generate proof fixture
+            create_proof_fixture(&proof, &vk, ProofSystem::Groth16);
+
+            // If needed, pass the updated proofs back to the original context
+        });
     }
 
     pub fn get_proof(&self, id: String) -> Option<&SP1Proof> {

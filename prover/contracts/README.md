@@ -1,6 +1,6 @@
-# SP1 Project Template Contracts
+# Verification contracts
 
-This is a template for writing a contract that uses verification of [SP1](https://github.com/succinctlabs/sp1) PlonK proofs onchain using the [SP1VerifierGateway](https://github.com/succinctlabs/sp1-contracts/blob/main/contracts/src/SP1VerifierGateway.sol).
+This a contract that uses verification of [SP1](https://github.com/succinctlabs/sp1) PlonK proofs onchain using the [SP1VerifierGateway](https://github.com/succinctlabs/sp1-contracts/blob/main/contracts/src/SP1VerifierGateway.sol).
 
 ## Requirements
 
@@ -26,7 +26,7 @@ Note: you can use either the [SP1VerifierGateway](https://github.com/succinctlab
 
 #### Step 2: Set the `PROGRAM_VKEY` environment variable
 
-Find your program verification key by going into the `../script` directory and running `RUST_LOG=info cargo run --package fibonacci-script --bin vkey --release`, which will print an output like:
+Find your program verification key by going into the `../script` directory and running `RUST_LOG=info cargo run --package solc-zkmod-server --bin vkey --release`, which will print an output like:
 
 > Program Verification Key: 0x00620892344c310c32a74bf0807a5c043964264e4f37c96a10ad12b5c9214e0e
 
@@ -51,11 +51,11 @@ PRIVATE_KEY=...
 Then deploy the contract to the chain:
 
 ```sh
-forge create src/Fibonacci.sol:Fibonacci --rpc-url $RPC_URL --private-key $PRIVATE_KEY --constructor-args $VERIFIER $PROGRAM_VKEY
+forge create src/SolcZkmod.sol:SolcZkmod --rpc-url $RPC_URL --private-key $PRIVATE_KEY --constructor-args $VERIFIER $PROGRAM_VKEY
 ```
 
 It can also be a good idea to verify the contract when you deploy, in which case you would also need to set `ETHERSCAN_API_KEY`:
 
 ```sh
-forge create src/Fibonacci.sol:Fibonacci --rpc-url $RPC_URL --private-key $PRIVATE_KEY --constructor-args $VERIFIER $PROGRAM_VKEY --verify --verifier etherscan --etherscan-api-key $ETHERSCAN_API_KEY
+forge create src/SolcZkmod.sol:SolcZkmod --rpc-url $RPC_URL --private-key $PRIVATE_KEY --constructor-args $VERIFIER $PROGRAM_VKEY --verify --verifier etherscan --etherscan-api-key $ETHERSCAN_API_KEY
 ```

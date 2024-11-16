@@ -47,9 +47,10 @@ async fn request_proof(
     }
     drop(state_guard);
 
-    state.prover.prove(format!("{:x}", req_hash), payload.requests);
+    let req_id = format!("{:x}", req_hash);
+    state.prover.prove(req_id.clone(), payload.requests);
 
-    Json(ProofResponse { id: req_hash })
+    Json(ProofResponse { id: req_id })
 }
 
 // Handler for /check-proof/{id}
