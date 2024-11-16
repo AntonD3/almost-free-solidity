@@ -7,16 +7,24 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use std::{collections::HashSet, env, sync::{Arc, Mutex}};
 use std::collections::HashMap;
+use std::hash::Hash;
 use sha2::{Digest, Sha256};
 use web3::types::{CallRequest, H160};
-use solc_zkmod_lib::{keccak256, prover::prover};
+use solc_zkmod_lib::{keccak256, prover::prover, run_evm};
 use solc_zkmod_lib::prover::prover::ProvingInput;
 
 // Shared state to keep track of submitted proofs
 struct AppState {
     submitted_proofs: Mutex<HashSet<String>>,
     known_bytecodes: HashMap<[u8; 32], Vec<u8>>,
+    known_req_data: HashMap<String, ReqData>,
     prover: prover::Prover,
+}
+
+struct ReqData {
+    bytecode: Vec<u8>,
+    calldata: Vec<u8>,
+    merkle_proof: Vec<u8>,
 }
 
 #[derive(Deserialize)]
@@ -40,6 +48,11 @@ struct ProofRequest {
 #[derive(Serialize)]
 struct ProofResponse {
     id: String,
+}
+
+#[derive(Serialize)]
+struct WitnessOutput {
+    output: Vec<u8>,
 }
 
 // Handler for /request-proof
@@ -114,6 +127,24 @@ async fn make_eth_call(data: ProofRequestData) -> Result<([u8], [u8]), String> {
     Ok((code_hash, input_data))
 }
 
+async fn get_witness(
+    Path(id): Path<String>,
+    State(state): State<Arc<AppState>>,
+) -> impl IntoResponse {
+    let proof = state.prover.get_proof(id.clone()).unwrap();
+    let witness_data = state.known_req_data.get(id.clone().as_str()).unwrap().clone();
+    let result = run_evm(witness_data.bytecode.clone(), witness_data.calldata.clone()).unwrap();
+
+    let output = [
+        *[result.len() as u8],
+        result[..],
+        *[witness_data.merkle_proof.len() as u8],
+        witness_data.merkle_proof[..],
+    ].concat();
+
+    Json(WitnessOutput { output })
+}
+
 async fn add_bytecode(
     Json(payload): Json<AddBytecodeRequest>,
     State(state): State<Arc<AppState>>,
@@ -139,6 +170,7 @@ async fn main() {
     let state = Arc::new(AppState {
         submitted_proofs: Mutex::new(HashSet::new()),
         known_bytecodes: HashMap::new(),
+        known_req_data: HashMap::new(),
         prover,
     });
 
@@ -147,7 +179,8 @@ async fn main() {
     let app = Router::new()
         .route("/request-proof", post(request_proof))
         .route("/check-proof/:id", get(check_proof))
-        .route("/add-bytecode", get(check_proof))
+        .route("/add-bytecode", post(add_bytecode))
+        .route("/get-witness/:id", get(get_witness))
         .with_state(state.clone());
 
 

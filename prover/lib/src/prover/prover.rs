@@ -53,7 +53,7 @@ pub struct Prover {
     pk: SP1ProvingKey,
     vk: SP1VerifyingKey,
     client: Arc<ProverClient>,
-    proofs: HashMap<String, SP1Proof>,
+    proofs: HashMap<String, Vec<u8>>,
 }
 
 impl Prover {
