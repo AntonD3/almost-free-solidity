@@ -133,6 +133,8 @@ async fn check_proof(
 
 #[tokio::main]
 async fn main() {
+    let prover = prover::Prover::new();
+
     // Shared state to store proof IDs
     let state = Arc::new(AppState {
         submitted_proofs: Mutex::new(HashSet::new()),
@@ -147,8 +149,6 @@ async fn main() {
         .route("/check-proof/:id", get(check_proof))
         .route("/add-bytecode", get(check_proof))
         .with_state(state.clone());
-
-    let prover = prover::Prover::new();
 
 
     // Start the server
