@@ -1,9 +1,12 @@
 # [almost] free soldity
 _Powered by ZKPs_
 
+![screenshot](simple_examle.png)
+
 This project introduces a `@free` annotation that allows you to offload any heavy computation offchain.
 The computation correctness will be proved on-chain using zero knowledge cyptography.
-It allows solidity developers to bring the cost of compute-heavy functions almost to zero without sacrificing the DevEx. 
+It allows solidity developers to bring the cost of compute-heavy functions almost to zero without sacrificing the DevEx.
+It can be achieved by aggregating ZK proofs.
 
 - way to scale your project on any chain without thinking about underlying arch
 ---
